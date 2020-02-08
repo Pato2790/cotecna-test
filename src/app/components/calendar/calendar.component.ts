@@ -1,5 +1,9 @@
-import { Component, OnInit } from "@angular/core";
 import * as moment from "moment";
+import { Component, OnInit } from "@angular/core";
+import { InspectionsService } from "../../services/inspectionService/inspections.service";
+import { WeatherService } from "../../services/weatherService/weather.service";
+import { Inspection } from "../../services/inspectionService/inspection";
+import { Forecast } from "src/app/services/weatherService/forecast";
 
 @Component({
   selector: "app-calendar",
@@ -7,6 +11,13 @@ import * as moment from "moment";
   styleUrls: ["./calendar.component.scss"]
 })
 export class CalendarComponent implements OnInit {
+  // Inspections Data
+  inspections: Inspection[];
+
+  // Inspections Data
+  forecast: Forecast;
+
+  // Calendar Data
   localeString: string = "en";
   navDate: any;
   weekDays: Array<string> = [];
@@ -20,9 +31,33 @@ export class CalendarComponent implements OnInit {
   minYear = "2010";
   maxYear = "2030";
 
-  constructor() {}
+  constructor(
+    private inspectionsService: InspectionsService,
+    private weatherService: WeatherService
+  ) {
+    this.getInspections();
+    this.getForecast();
+  }
 
   ngOnInit() {
+    this.initCalendar();
+  }
+
+  // Inspections Methods
+  getInspections(): void {
+    this.inspectionsService
+      .getInspections()
+      .subscribe(data => (this.inspections = data));
+  }
+
+  // Weather Methods
+  getForecast(): void {
+    this.weatherService.getForecast().subscribe(data => (this.forecast = data));
+  }
+
+  // Calendar Methods
+
+  initCalendar() {
     moment.locale(this.localeString);
     this.navDate = moment();
     this.selectedMonth = this.navDate.format("MMMM");
@@ -34,15 +69,15 @@ export class CalendarComponent implements OnInit {
   }
 
   onMonthChange() {
-    if (this.canChangeDate('month', this.selectedMonth)) {
-      this.navDate.set('month', this.selectedMonth);
+    if (this.canChangeDate("month", this.selectedMonth)) {
+      this.navDate.set("month", this.selectedMonth);
       this.daysList();
     }
   }
 
   onYearChange() {
-    if (this.canChangeDate('year', this.selectedYear)) {
-      this.navDate.set('year', this.selectedYear);
+    if (this.canChangeDate("year", this.selectedYear)) {
+      this.navDate.set("year", this.selectedYear);
       this.daysList();
     }
   }
@@ -96,7 +131,7 @@ export class CalendarComponent implements OnInit {
   yearsList() {
     const dateStart = moment(this.minYear);
     // @ts-ignore
-    const dateEnd = moment().set('year', this.maxYear);
+    const dateEnd = moment().set("year", this.maxYear);
 
     while (dateEnd.diff(dateStart, "years") >= 0) {
       this.years.push(dateStart.format("YYYY"));
