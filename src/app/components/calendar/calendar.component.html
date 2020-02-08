@@ -26,7 +26,7 @@
   </mat-grid-tile>
 </mat-grid-list>
 <mat-grid-list cols="7" rowHeight="3:1">
-  <mat-grid-tile *ngFor="let day of grid" [class.is-disabled]="!day.available">
-    <p *ngIf="day.value !== 0" class="date-item">{{day.value}}</p>
+  <mat-grid-tile *ngFor="let day of grid">
+    <p *ngIf="day.value !== 0" [class.markInspection]='checkInspection(day.value)'>{{day.value}}</p>
   </mat-grid-tile>
 </mat-grid-list>

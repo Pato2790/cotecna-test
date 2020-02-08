@@ -55,8 +55,27 @@ export class CalendarComponent implements OnInit {
     this.weatherService.getForecast().subscribe(data => (this.forecast = data));
   }
 
-  // Calendar Methods
+  // Fill Data Methods
+  checkInspection(day: number) {
+    const currentMonthNumber = moment()
+      .month(this.selectedMonth)
+      .format("MM");
 
+    const mappedDay = (day + "").padStart(2, "0");
+
+    const startDay = moment(
+      `${this.selectedYear}${currentMonthNumber}${mappedDay}T000000`
+    );
+    const endDay = moment(
+      `${this.selectedYear}${currentMonthNumber}${mappedDay}T235959`
+    );
+
+    return this.inspections.some(inspection =>
+      moment(inspection.date).isBetween(startDay, endDay)
+    );
+  }
+
+  // Calendar Methods
   initCalendar() {
     moment.locale(this.localeString);
     this.navDate = moment();
