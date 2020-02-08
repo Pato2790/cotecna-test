@@ -1,0 +1,32 @@
+<mat-grid-list cols="2" rowHeight="5:1">
+  <mat-grid-tile>
+    <mat-form-field>
+      <mat-label>Month</mat-label>
+      <mat-select [(value)]="selectedMonth" (selectionChange)="onMonthChange()">
+        <mat-option *ngFor="let month of monthsYear" [value]="month">
+          {{month}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-form-field>
+      <mat-label>Year</mat-label>
+      <mat-select [(value)]="selectedYear" (selectionChange)="onYearChange()">
+        <mat-option *ngFor="let year of years" [value]="year">
+          {{year}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-grid-tile>
+</mat-grid-list>
+<mat-grid-list cols="7" rowHeight="3:1">
+  <mat-grid-tile *ngFor="let day of weekDays">
+    {{day}}
+  </mat-grid-tile>
+</mat-grid-list>
+<mat-grid-list cols="7" rowHeight="3:1">
+  <mat-grid-tile *ngFor="let day of grid" [class.is-disabled]="!day.available">
+    <p *ngIf="day.value !== 0" class="date-item">{{day.value}}</p>
+  </mat-grid-tile>
+</mat-grid-list>

@@ -4,8 +4,12 @@ import { NgModule } from "@angular/core";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+
+// Angular Material Libraries
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { CalendarComponent } from './calendar/calendar.component';
+import { CalendarComponent } from "./calendar/calendar.component";
+import { MatGridListModule } from "@angular/material/grid-list";
+import { MatSelectModule } from "@angular/material/select";
 
 @NgModule({
   declarations: [AppComponent, CalendarComponent],
@@ -13,9 +17,11 @@ import { CalendarComponent } from './calendar/calendar.component';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatGridListModule,
+    MatSelectModule
   ],
-  exports: [MatToolbarModule],
+  exports: [MatToolbarModule, MatGridListModule, MatSelectModule],
   providers: [],
   bootstrap: [AppComponent]
 })
