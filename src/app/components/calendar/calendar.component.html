@@ -28,7 +28,8 @@
 <mat-grid-list cols="7" rowHeight="2:1">
   <mat-grid-tile *ngFor="let day of grid; let i = index">
     <div class="dayDisplay">
-      <p *ngIf="day.value !== 0" [class.markInspection]='checkInspection(day.value)'>{{day.value}}</p>
+      <p *ngIf="day.value !== 0" [class.markInspection]='checkInspection(day.value)'
+        [class.today]='checkToday(day.value)'>{{day.value}}</p>
       <p>{{getDayForecast(day.value)}}</p>
     </div>
   </mat-grid-tile>

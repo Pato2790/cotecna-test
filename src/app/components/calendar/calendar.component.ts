@@ -201,6 +201,12 @@ export class CalendarComponent implements OnInit {
     }
   }
 
+  checkToday(day: number) {
+    return moment(this.generateStringDate(day))
+      .startOf("days")
+      .isSame(moment().startOf("days"));
+  }
+
   isAvailable(num: number): boolean {
     let dateToCheck = this.dateFromNum(num, this.navDate);
     if (dateToCheck.isBefore(moment(), "day")) {
