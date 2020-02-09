@@ -2,8 +2,9 @@ import * as moment from "moment";
 import { Component, OnInit } from "@angular/core";
 import { InspectionsService } from "../../services/inspectionService/inspections.service";
 import { WeatherService } from "../../services/weatherService/weather.service";
-import { Inspection } from "../../services/inspectionService/inspection";
-import { Forecast } from "src/app/services/weatherService/forecast";
+import { Inspection } from "../../types/Inspection";
+import { Forecast } from "../../types/Forecast";
+import { MappedForecast, ReducedForecast } from "src/app/types/MappedForecast";
 
 @Component({
   selector: "app-calendar",
@@ -14,8 +15,8 @@ export class CalendarComponent implements OnInit {
   // Inspections Data
   inspections: Inspection[];
 
-  // Inspections Data
-  forecast: Forecast;
+  // Forecast Data
+  forecast: MappedForecast[] = [];
 
   // Calendar Data
   localeString: string = "en";
@@ -52,23 +53,65 @@ export class CalendarComponent implements OnInit {
 
   // Weather Methods
   getForecast(): void {
-    this.weatherService.getForecast().subscribe(data => (this.forecast = data));
+    this.weatherService.getForecast().subscribe(data => this.mapForecast(data));
+  }
+
+  mapForecast(forecast: Forecast) {
+    const groupForecast = forecast.list.reduce((r, forecast) => {
+      r[forecast.dt_txt.substr(0, 10)] = (
+        r[forecast.dt_txt.substr(0, 10)] || []
+      ).concat({
+        main: { temp: forecast.main.temp },
+        weather: { main: forecast.weather[0].main }
+      });
+      return r;
+    }, {});
+
+    for (var mappedForecast of Object.values<ReducedForecast[]>(
+      groupForecast
+    )) {
+      this.forecast.push({
+        date: Object.keys(groupForecast).find(
+          key => groupForecast[key] === mappedForecast
+        ),
+        forecastDays: mappedForecast
+      });
+    }
+  }
+
+  getDayForecast(day: number) {
+    if (day > 0 && this.forecast.length > 0) {
+      const today = moment()
+        .subtract(1, "days")
+        .endOf("days");
+      const fiveDaysAhead = moment()
+        .add(5, "day")
+        .endOf("days");
+      const stringCalendarDate = this.generateStringDate(day);
+      const calendarDate = moment(stringCalendarDate);
+
+      if (calendarDate.isBetween(today, fiveDaysAhead)) {
+        for (var dayForecast of this.forecast) {
+          if (moment(dayForecast.date).isSame(calendarDate)) {
+            const tempAverage = Math.round(
+              dayForecast.forecastDays.reduce(
+                (prevTemp, currentTemp) => prevTemp + currentTemp.main.temp,
+                0
+              ) / dayForecast.forecastDays.length
+            );
+
+            return `${dayForecast.forecastDays[0].weather.main} (${tempAverage}°)`;
+          }
+        }
+      }
+    }
   }
 
   // Fill Data Methods
   checkInspection(day: number) {
-    const currentMonthNumber = moment()
-      .month(this.selectedMonth)
-      .format("MM");
+    const startDay = moment(`${this.generateStringDate(day)}`).startOf("days");
 
-    const mappedDay = (day + "").padStart(2, "0");
-
-    const startDay = moment(
-      `${this.selectedYear}${currentMonthNumber}${mappedDay}T000000`
-    );
-    const endDay = moment(
-      `${this.selectedYear}${currentMonthNumber}${mappedDay}T235959`
-    );
+    const endDay = moment(`${this.generateStringDate(day)}`).endOf("days");
 
     return this.inspections.some(inspection =>
       moment(inspection.date).isBetween(startDay, endDay)
@@ -170,5 +213,15 @@ export class CalendarComponent implements OnInit {
   dateFromNum(num: number, referenceDate: any): any {
     let returnDate = moment(referenceDate);
     return returnDate.date(num);
+  }
+
+  generateStringDate(day: number) {
+    const currentMonthNumber = moment()
+      .month(this.selectedMonth)
+      .format("MM");
+
+    const mappedDay = (day + "").padStart(2, "0");
+
+    return `${this.selectedYear}${currentMonthNumber}${mappedDay}`;
   }
 }
