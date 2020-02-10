@@ -55,14 +55,18 @@ export class CalendarComponent implements OnInit {
 
   // Inspections Methods
   getInspections(): void {
-    this.inspectionsService
-      .getInspections()
-      .subscribe(data => (this.inspections = data));
+    this.inspectionsService.getInspections().subscribe(data => {
+      console.info("Inspections Data:", data);
+      this.inspections = data;
+    });
   }
 
   // Weather Methods
   getForecast(): void {
-    this.weatherService.getForecast().subscribe(data => this.mapForecast(data));
+    this.weatherService.getForecast().subscribe(data => {
+      console.info("Forecast Data:", data);
+      this.mapForecast(data);
+    });
   }
 
   mapForecast(forecast: Forecast) {
@@ -109,7 +113,11 @@ export class CalendarComponent implements OnInit {
               ) / dayForecast.forecastDays.length
             );
 
-            return `${dayForecast.forecastDays[0].weather.main} (${tempAverage}°)`;
+            return `${
+              dayForecast.forecastDays[
+                Math.round(dayForecast.forecastDays.length / 2)
+              ].weather.main
+            } (${tempAverage}°)`;
           }
         }
       }
