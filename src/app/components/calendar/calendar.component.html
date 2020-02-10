@@ -1,8 +1,8 @@
-<mat-grid-list [cols]="cols" rowHeight="5:1">
+<mat-grid-list id='dateSelectors' [cols]="cols" rowHeight="5:1">
   <mat-grid-tile>
     <mat-form-field>
       <mat-label>Month</mat-label>
-      <mat-select [(value)]="selectedMonth" (selectionChange)="onMonthChange()">
+      <mat-select id='monthSelector' [(value)]="selectedMonth" (selectionChange)="onMonthChange()">
         <mat-option *ngFor="let month of monthsYear" [value]="month">
           {{month}}
         </mat-option>
@@ -12,7 +12,7 @@
   <mat-grid-tile>
     <mat-form-field>
       <mat-label>Year</mat-label>
-      <mat-select [(value)]="selectedYear" (selectionChange)="onYearChange()">
+      <mat-select id='yearSelector' [(value)]="selectedYear" (selectionChange)="onYearChange()">
         <mat-option *ngFor="let year of years" [value]="year">
           {{year}}
         </mat-option>
@@ -21,16 +21,16 @@
   </mat-grid-tile>
 </mat-grid-list>
 <mat-grid-list cols="7" rowHeight="3:1">
-  <mat-grid-tile *ngFor="let day of weekDays">
+  <mat-grid-tile id='dayWeek' *ngFor="let day of weekDays">
     {{day}}
   </mat-grid-tile>
 </mat-grid-list>
-<mat-grid-list cols="7" rowHeight="fit" style="height: 60%;">
+<mat-grid-list cols="7" rowHeight="fit" class="cellCalendar">
   <mat-grid-tile *ngFor="let day of grid; let i = index">
     <div class="dayDisplay">
       <p *ngIf="day.value !== 0" [class.markInspection]='checkInspection(day.value)'
-        [class.today]='checkToday(day.value)'>{{day.value}}</p>
-      <p>{{getDayForecast(day.value)}}</p>
+        [class.today]='checkToday(day.value)' id="dayMonth{{i}}">{{day.value}}</p>
+      <p id="dayMonthWeather{{i}}">{{getDayForecast(day.value)}}</p>
     </div>
   </mat-grid-tile>
 </mat-grid-list>
