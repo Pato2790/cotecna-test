@@ -1,5 +1,5 @@
 export interface Inspection {
   id: number;
-  date: Date;
+  date: string;
   inspectorName: string
 }

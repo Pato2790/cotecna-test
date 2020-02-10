@@ -5,6 +5,7 @@ import { WeatherService } from "../../services/weatherService/weather.service";
 import { Inspection } from "../../types/Inspection";
 import { Forecast } from "../../types/Forecast";
 import { MappedForecast, ReducedForecast } from "src/app/types/MappedForecast";
+import { HostListener } from "@angular/core";
 
 @Component({
   selector: "app-calendar",
@@ -32,6 +33,9 @@ export class CalendarComponent implements OnInit {
   minYear = "2010";
   maxYear = "2030";
 
+  // UI Columns Date Selectors
+  cols = 2;
+
   constructor(
     private inspectionsService: InspectionsService,
     private weatherService: WeatherService
@@ -42,6 +46,11 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit() {
     this.initCalendar();
+  }
+
+  @HostListener("window:resize", ["$event"])
+  getScreenSize(event?) {
+    this.cols = window.innerWidth < 580 ? 1 : 2;
   }
 
   // Inspections Methods
@@ -111,10 +120,8 @@ export class CalendarComponent implements OnInit {
   checkInspection(day: number) {
     const startDay = moment(`${this.generateStringDate(day)}`).startOf("days");
 
-    const endDay = moment(`${this.generateStringDate(day)}`).endOf("days");
-
     return this.inspections.some(inspection =>
-      moment(inspection.date).isBetween(startDay, endDay)
+      moment(`${inspection.date}T000000`, "YYYYMMDD").isSame(startDay)
     );
   }
 
@@ -142,14 +149,6 @@ export class CalendarComponent implements OnInit {
       this.navDate.set("year", this.selectedYear);
       this.daysList();
     }
-  }
-
-  canChangeDate(type: string, newDate: string) {
-    const clonedDate = moment(this.navDate);
-    // @ts-ignore
-    clonedDate.set(type, newDate);
-
-    return clonedDate.isBetween(moment(this.minYear), moment(this.maxYear));
   }
 
   daysNamesList() {
@@ -191,9 +190,9 @@ export class CalendarComponent implements OnInit {
   }
 
   yearsList() {
-    const dateStart = moment(this.minYear);
-    // @ts-ignore
-    const dateEnd = moment().set("year", this.maxYear);
+    const dateStart = moment.utc(this.minYear);
+
+    const dateEnd = moment.utc(this.maxYear);
 
     while (dateEnd.diff(dateStart, "years") >= 0) {
       this.years.push(dateStart.format("YYYY"));
@@ -205,6 +204,14 @@ export class CalendarComponent implements OnInit {
     return moment(this.generateStringDate(day))
       .startOf("days")
       .isSame(moment().startOf("days"));
+  }
+
+  canChangeDate(type: string, newDate: string) {
+    const clonedDate = moment(this.navDate);
+    // @ts-ignore
+    clonedDate.set(type, newDate);
+
+    return clonedDate.isBetween(moment(this.minYear), moment(this.maxYear));
   }
 
   isAvailable(num: number): boolean {

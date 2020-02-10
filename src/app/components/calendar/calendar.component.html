@@ -1,4 +1,4 @@
-<mat-grid-list cols="2" rowHeight="5:1">
+<mat-grid-list [cols]="cols" rowHeight="5:1">
   <mat-grid-tile>
     <mat-form-field>
       <mat-label>Month</mat-label>
@@ -25,7 +25,7 @@
     {{day}}
   </mat-grid-tile>
 </mat-grid-list>
-<mat-grid-list cols="7" rowHeight="2:1">
+<mat-grid-list cols="7" rowHeight="fit" style="height: 60%;">
   <mat-grid-tile *ngFor="let day of grid; let i = index">
     <div class="dayDisplay">
       <p *ngIf="day.value !== 0" [class.markInspection]='checkInspection(day.value)'
